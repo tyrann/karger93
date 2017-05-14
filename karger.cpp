@@ -1,3 +1,8 @@
+#include <iostream>
+#include <set>
+
+using namespace std;
+
 
 struct edge {
 	int ep1, ep2;
@@ -18,6 +23,11 @@ struct graph{
 
 int main(int argc, char *argv[])
 {
+
+	int vertices, edges;
+	cin >> vertices >> edges;
+
+	printf("vertices %d\n",vertices);
 	
 	return 0;
 }
