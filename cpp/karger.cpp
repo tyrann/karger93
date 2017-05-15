@@ -47,28 +47,40 @@ pair<int,int> run_karger(struct graph* g){
 		cout << e.endpoints.first << " <-> " << e.endpoints.second << endl;
 		
 		//Check where endpoint are
-		vector<set<int>> sets;
+		vector<set<int>*>sets;
 		
-		for( set<int> s : v_set){
+		for( auto &s : v_set){
 			if(s.find(e.endpoints.first) != s.end() || s.find(e.endpoints.second) != s.end()){
 				cout << "Found element in set" << endl;
 				cout << *(s.begin()) << endl;
-				sets.push_back(s);
+				sets.push_back(&s);
 			}
 
 		}
-		cout << "Size of vector"  <<sets.size() << endl;
-		cout << *(sets[0].begin()) << " && " << *(sets[1].begin()) << endl;
+		cout << "Size of vector: "  <<sets.size() << endl;
+		cout << *(sets[0]->begin()) << " && " << *(sets[1]->begin()) << endl;
+		cout << "Showing sets:"<< endl;
+
+		for(auto iter=sets[0]->begin(); iter!=sets[0]->end();++iter) {
+			cout << "{"<< (*iter)<<"}" << ", ";
+		}
+		cout << endl;
+
+		for(auto iter=sets[1]->begin(); iter!=sets[1]->end();++iter) {
+			cout << "{"<< (*iter)<<"}" << ", ";
+		}
 		
+		cout << endl;
+
+		sleep(1);
 		// Merge subset if different
 		// TODO Do it faster
-		if(!(sets[0] == sets[1])){
+		if(!(*sets[0] == *sets[1])){
 			cout << "different sets" << endl;
 			//Update set
-			sets[0].insert(sets[1].begin(),sets[1].end());
-			v_set.push_back(sets[0]);
+			sets[0]->insert(sets[1]->begin(),sets[1]->end());
 			//Remove one
-			v_set.erase(remove(v_set.begin(), v_set.end(), sets[1]), v_set.end());
+			v_set.erase(remove(v_set.begin(),v_set.end(), *sets[1]),v_set.end());
 			V--;
 		}
 		
