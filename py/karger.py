@@ -1,3 +1,5 @@
+import sys
+
 from random import choice
 from collections import defaultdict
 
@@ -52,21 +54,36 @@ def cut_len(edges, cut):
 
     return cut_len
 
+def cut_in(cut, cuts):
+    '''Returns True if cut in already in the list of cuts'''
+
+    for cut2 in cuts:
+        if cut[0] == cut2[0] or cut[0] == cut2[1]:
+            return True
+
+    return False
 
 
 if __name__ == "__main__":
-    with open(a2_path) as f:
-        vertices_count, edge_count = next(f).split()
-        vertices_count, edge_count = int(vertices_count), int(edge_count)
+    vertices_count, edge_count = next(sys.stdin).split()
+    vertices_count, edge_count = int(vertices_count), int(edge_count)
 
-        edges  = [tuple(line.split()) for line in f]
-        edges = [(int(v1), int(v2)) for v1, v2 in edges]
+    edges  = [tuple(line.split()) for line in sys.stdin]
+    edges = [(int(v1), int(v2)) for v1, v2 in edges]
 
-        # dict with default value to 0
-        cut_len_dict = defaultdict(int)
-        for i in range(20000):
-            cut = karger(edges[:], vertices_count)
-            cut_l = cut_len(edges, cut)
-            cut_len_dict[cut_l] += 1
+    min_cuts = []
+    min_cut_len = vertices_count
 
-        print(cut_len_dict)
+    # dict with default value to 0
+    cut_len_dict = defaultdict(int)
+    for i in range(4500):
+        cut = karger(edges[:], vertices_count)
+        cut_l = cut_len(edges, cut)
+
+        if cut_l < min_cut_len:
+            min_cuts = [cut]
+            min_cut_len = cut_l
+        elif cut_l == min_cut_len and not cut_in(cut, min_cuts):
+            min_cuts.append(cut)
+
+    print(min_cut_len, len(min_cuts))
