@@ -66,6 +66,7 @@ pair<int,int> run_karger(struct graph* g){
 			cout << "different sets" << endl;
 			//Update set
 			sets[0].insert(sets[1].begin(),sets[1].end());
+			v_set.push_back(sets[0]);
 			//Remove one
 			v_set.erase(remove(v_set.begin(), v_set.end(), sets[1]), v_set.end());
 			V--;
