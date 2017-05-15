@@ -22,14 +22,20 @@ def sets_that_contains(set_list, edge):
 
 def karger(edges, vertices_count):
     vertices_sets = [{i} for i in range(1, vertices_count + 1)]
+    set_for_element = {next(iter(s)): s for s in vertices_sets}
 
     while len(vertices_sets) > 2:
         random_edge = choice(edges)
 
-        s1, s2 = sets_that_contains(vertices_sets, random_edge)
+        s1 = set_for_element[random_edge[0]]
+        s2 = set_for_element[random_edge[1]]
 
         vertices_sets.remove(s1)
         s2.update(s1)
+
+        # update set dict
+        for elem in s2:
+            set_for_element[elem] = s2
 
         # clean self loops
         for edge in edges[:]:
@@ -72,7 +78,7 @@ if __name__ == "__main__":
 
     # dict with default value to 0
     cut_len_dict = defaultdict(int)
-    for i in range(2000):
+    for i in range(5500):
         cut = karger(edges[:], vertices_count)
         cut_l = cut_len(edges, cut)
 
