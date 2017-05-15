@@ -1,8 +1,10 @@
+#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include <set>
 
 using namespace std;
+
 
 
 struct edge {
@@ -12,7 +14,7 @@ struct edge {
 
 struct graph{
 	
-	struct edge* edge_list;
+	vector<struct edge> edge_list;
 
 	int num_vertices;
 	int num_edges;
@@ -21,25 +23,34 @@ struct graph{
 
 pair<int,int> run_karger(struct graph* g){
 	int V = g->num_vertices;
+	int E = g->num_edges;
+	std::vector<struct edge> local_edge_list = g->edge_list;
+
+
 	//Create a collection of sets
-	set<int> *c_set = new set<int>[g->num_vertices] ;
+	vector <set<int>> v_set = vector<set<int>>(g->num_vertices) ;
 
 	//Add each vertex in its own set
 	for (int i = 0; i < V; ++i) {
 
-		c_set[i].insert(i);
+		v_set[i].insert(i);
 		
 	}
 
-	for (int i =0;i < V;i++)
-    {
-        cout << "size of set # " << i << ' ' << c_set[i].size() << endl;
-    }
-
 	while(V != 2){
+
 		//Pick edge at random
+		struct edge e = local_edge_list[rand() % E];
 		
 		//Check where endpoint are
+		vector<set<int>> sets(2);
+		
+		for( set<int> s : v_set){
+			if(s.find(e.endpoints.first) != s.end() || s.find(e.endpoints.second) != s.end()){
+				sets.push_back(s);
+			}
+
+		}
 		
 		// Merge subset if different
 		
@@ -62,14 +73,17 @@ int main(int argc, char *argv[])
 
 	g->num_vertices = vertices;
 	g->num_edges = edges;
-	g->edge_list = new edge[edges];
+	g->edge_list = vector<edge>(edges);
+
 
 	for (int i = 0; i < edges; ++i) {
 		cin >> g->edge_list[i].endpoints.first >> g->edge_list[i].endpoints.second;
-
-		//printf("Adding edge %d: %d <-> %d\n",i,g->edge_list[i].endpoints.first,g->edge_list[i].endpoints.second);
-		
 	}
+
+	/*for (auto i = g->edge_list.begin(); i < g->edge_list.end();i++) {
+		cout << (*i).endpoints.first << endl;
+		
+	}*/
 
 	run_karger(g);
 
