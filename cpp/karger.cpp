@@ -1,7 +1,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <vector>
+#include <algorithm>
 #include <set>
+#include <unistd.h>
 
 using namespace std;
 
@@ -41,21 +43,37 @@ pair<int,int> run_karger(struct graph* g){
 
 		//Pick edge at random
 		struct edge e = local_edge_list[rand() % E];
+
+		cout << e.endpoints.first << " <-> " << e.endpoints.second << endl;
 		
 		//Check where endpoint are
-		vector<set<int>> sets(2);
+		vector<set<int>> sets;
 		
 		for( set<int> s : v_set){
 			if(s.find(e.endpoints.first) != s.end() || s.find(e.endpoints.second) != s.end()){
+				cout << "Found element in set" << endl;
+				cout << *(s.begin()) << endl;
 				sets.push_back(s);
 			}
 
 		}
+		cout << "Size of vector"  <<sets.size() << endl;
+		cout << *(sets[0].begin()) << " && " << *(sets[1].begin()) << endl;
 		
 		// Merge subset if different
+		// TODO Do it faster
+		if(!(sets[0] == sets[1])){
+			cout << "different sets" << endl;
+			//Update set
+			sets[0].insert(sets[1].begin(),sets[1].end());
+			//Remove one
+			v_set.erase(remove(v_set.begin(), v_set.end(), sets[1]), v_set.end());
+			V--;
+		}
 		
 
 	}
+	cout << "Over" << endl;
 	//Retreive size of cut and edges
 	//Rerun until obtaining all min cut
 
