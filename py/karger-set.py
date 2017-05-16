@@ -80,12 +80,12 @@ if __name__ == "__main__":
     cut_len_dict = defaultdict(int)
     for i in range(10000):
         cut = karger(edges[:], vertices_count)
-    #     cut_l = cut_len(edges, cut)
-    #
-    #     if cut_l < min_cut_len:
-    #         min_cuts = [cut]
-    #         min_cut_len = cut_l
-    #     elif cut_l == min_cut_len and not cut_in(cut, min_cuts):
-    #         min_cuts.append(cut)
-    #
-    # print(min_cut_len, len(min_cuts))
+        cut_l = cut_len(edges, cut)
+
+        if cut_l < min_cut_len:
+            min_cuts = [cut]
+            min_cut_len = cut_l
+        elif cut_l == min_cut_len and not cut_in(cut, min_cuts):
+            min_cuts.append(cut)
+
+    print(min_cut_len, len(min_cuts))

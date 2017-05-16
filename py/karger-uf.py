@@ -57,31 +57,19 @@ def sets_and_cut_len(edges, cut_tree):
     '''From a cut_tree constructed by union-find,
     return the length of the cut, and the two disjoint
     sets of vertices'''
-    cut_l = 0
+    edges_of_cut = set()
 
-    cut_dict = defaultdict(set)
+    cut_l = 0
 
     for edge in edges:
         root1 = find(cut_tree[edge[0] - 1])
         root2 = find(cut_tree[edge[1] - 1])
-        cut_dict[root1.id].add(edge[0])
-        cut_dict[root2.id].add(edge[1])
 
         if root1 is not root2:
+            edges_of_cut.add(edge)
             cut_l += 1
 
-    set1, set2 = list(cut_dict.values())
-
-    return cut_l, set1, set2
-
-def cut_in(set1, set2, cuts):
-    '''Returns True if cut in already in the list of cuts'''
-
-    for cut2 in cuts:
-        if set1 == cut2[0] or set1 == cut2[1]:
-            return True
-
-    return False
+    return cut_l, edges_of_cut
 
 if __name__ == "__main__":
     vertices_count, edge_count = next(sys.stdin).split()
@@ -93,17 +81,19 @@ if __name__ == "__main__":
     min_cuts = []
     min_cut_len = vertices_count
 
+    N_ITER = 17500
+
     # dict with default value to 0
     cut_len_dict = defaultdict(int)
-    for i in range(15500):
+    for i in range(N_ITER):
         cut_tree = karger(edges[:], vertices_count)
 
-        cut_l, set1, set2 = sets_and_cut_len(edges, cut_tree)
+        cut_l, cut = sets_and_cut_len(edges, cut_tree)
 
         if cut_l < min_cut_len:
-            min_cuts = [(set1, set2)]
+            min_cuts = [cut]
             min_cut_len = cut_l
-        elif cut_l == min_cut_len and not cut_in(set1, set2, min_cuts):
-            min_cuts.append((set1, set2))
+        elif cut_l == min_cut_len and cut not in min_cuts:
+            min_cuts.append(cut)
 
     print(min_cut_len, len(min_cuts))
