@@ -3,68 +3,82 @@ import sys
 from random import choice
 from collections import defaultdict
 
+class UFNode:
+    def __init__(self, _id):
+        self.id = _id
+        self.parent = self
+        self.rank = 0
 
-a2_path = "../a2.in"
+    def __repr__(self):
+        return "UF({},{},{})".format(self.id, find(self).id, self.rank)
 
+def find(uf):
+    if uf.parent is not uf:
+        uf.parent = find(uf.parent)
 
-def sets_that_contains(set_list, edge):
-    sets = []
+    return uf.parent
 
-    for vertices_set in set_list:
-        if edge[0] in vertices_set or edge[1] in vertices_set:
-            sets.append(vertices_set)
+def union(uf1, uf2):
+    root1 = find(uf1)
+    root2 = find(uf2)
 
-    if len(sets) != 2:
-        raise ValueError("Impossible state, there should be only 2 sets")
-
-    return sets
-
+    if root1 is not root2:
+        if root1.rank < root2.rank:
+            root1.parent = root2
+        elif root1.rank > root2.rank:
+            root2.parent = root1
+        else:
+            root2.parent = root1
+            root1.rank += 1
 
 def karger(edges, vertices_count):
-    vertices_sets = [{i} for i in range(1, vertices_count + 1)]
-    set_for_element = {next(iter(s)): s for s in vertices_sets}
+    vertices_list = [UFNode(i) for i in range(1, vertices_count + 1)]
 
-    while len(vertices_sets) > 2:
+    v_len = vertices_count
+
+    while v_len > 2:
         random_edge = choice(edges)
 
-        s1 = set_for_element[random_edge[0]]
-        s2 = set_for_element[random_edge[1]]
+        root1 = find(vertices_list[random_edge[0] - 1])
+        root2 = find(vertices_list[random_edge[1] - 1])
 
-        vertices_sets.remove(s1)
-        s2.update(s1)
+        if root1 is not root2:
+            union(root1, root2)
+            v_len -= 1
 
-        # update set dict
-        for elem in s2:
-            set_for_element[elem] = s2
+        edges.remove(random_edge)
 
-        # clean self loops
-        for edge in edges[:]:
-            if edge[0] in s2 and edge[1] in s2:
-                edges.remove(edge)
+    return (vertices_list)
 
-    return (vertices_sets[0], vertices_sets[1])
+def sets_and_cut_len(edges, cut_tree):
+    '''From a cut_tree constructed by union-find,
+    return the length of the cut, and the two disjoint
+    sets of vertices'''
+    cut_l = 0
 
-
-def cut_len(edges, cut):
-    cut_len = 0
+    cut_dict = defaultdict(set)
 
     for edge in edges:
-        if edge[0] in cut[0] and edge[1] in cut[1] or \
-           edge[0] in cut[1] and edge[1] in cut[0]:
+        root1 = find(cut_tree[edge[0] - 1])
+        root2 = find(cut_tree[edge[1] - 1])
+        cut_dict[root1.id].add(edge[0])
+        cut_dict[root2.id].add(edge[1])
 
-           cut_len += 1
+        if root1 is not root2:
+            cut_l += 1
 
-    return cut_len
+    set1, set2 = list(cut_dict.values())
 
-def cut_in(cut, cuts):
+    return cut_l, set1, set2
+
+def cut_in(set1, set2, cuts):
     '''Returns True if cut in already in the list of cuts'''
 
     for cut2 in cuts:
-        if cut[0] == cut2[0] or cut[0] == cut2[1]:
+        if set1 == cut2[0] or set1 == cut2[1]:
             return True
 
     return False
-
 
 if __name__ == "__main__":
     vertices_count, edge_count = next(sys.stdin).split()
@@ -78,14 +92,15 @@ if __name__ == "__main__":
 
     # dict with default value to 0
     cut_len_dict = defaultdict(int)
-    for i in range(5500):
-        cut = karger(edges[:], vertices_count)
-        cut_l = cut_len(edges, cut)
+    for i in range(10000):
+        cut_tree = karger(edges[:], vertices_count)
+
+        cut_l, set1, set2 = sets_and_cut_len(edges, cut_tree)
 
         if cut_l < min_cut_len:
-            min_cuts = [cut]
+            min_cuts = [(set1, set2)]
             min_cut_len = cut_l
-        elif cut_l == min_cut_len and not cut_in(cut, min_cuts):
-            min_cuts.append(cut)
+        elif cut_l == min_cut_len and not cut_in(set1, set2, min_cuts):
+            min_cuts.append((set1, set2))
 
     print(min_cut_len, len(min_cuts))
