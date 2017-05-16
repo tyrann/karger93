@@ -38,7 +38,10 @@ def karger(edges, vertices_count):
 
     shuffle(edges)
 
-    for random_edge in edges:
+    i = 0
+
+    while v_len > 2:
+        random_edge = edges[i]
         root1 = find(vertices_list[random_edge[0] - 1])
         root2 = find(vertices_list[random_edge[1] - 1])
 
@@ -46,8 +49,7 @@ def karger(edges, vertices_count):
             union(root1, root2)
             v_len -= 1
 
-            if v_len <= 2:
-                break
+        i += 1
 
     return (vertices_list)
 
@@ -93,8 +95,8 @@ if __name__ == "__main__":
 
     # dict with default value to 0
     cut_len_dict = defaultdict(int)
-    for i in range(10000):
-        cut_tree = karger(edges, vertices_count)
+    for i in range(15500):
+        cut_tree = karger(edges[:], vertices_count)
 
         cut_l, set1, set2 = sets_and_cut_len(edges, cut_tree)
 
