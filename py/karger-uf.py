@@ -1,6 +1,6 @@
 import sys
 
-from random import choice
+from random import shuffle
 from collections import defaultdict
 
 class UFNode:
@@ -36,9 +36,9 @@ def karger(edges, vertices_count):
 
     v_len = vertices_count
 
-    while v_len > 2:
-        random_edge = choice(edges)
+    shuffle(edges)
 
+    for random_edge in edges:
         root1 = find(vertices_list[random_edge[0] - 1])
         root2 = find(vertices_list[random_edge[1] - 1])
 
@@ -46,7 +46,8 @@ def karger(edges, vertices_count):
             union(root1, root2)
             v_len -= 1
 
-        edges.remove(random_edge)
+            if v_len <= 2:
+                break
 
     return (vertices_list)
 
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     # dict with default value to 0
     cut_len_dict = defaultdict(int)
     for i in range(10000):
-        cut_tree = karger(edges[:], vertices_count)
+        cut_tree = karger(edges, vertices_count)
 
         cut_l, set1, set2 = sets_and_cut_len(edges, cut_tree)
 
