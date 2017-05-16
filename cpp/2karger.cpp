@@ -48,10 +48,6 @@ int main(int argc, char *argv[])
 		cin >> g->edge_list[i].endpoints.first >> g->edge_list[i].endpoints.second;
 	}
 
-	/*for (auto i = g->edge_list.begin(); i < g->edge_list.end();i++) {
-		//cout << (*i).endpoints.first << endl;
-		
-	}*/
 	for(int i = 0; i < 40000; i++){
 	int* res = run_karger(g);
 	}
