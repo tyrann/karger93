@@ -132,10 +132,14 @@ public class Main {
 class Edge {
 	int x;
 	int y;
-
+	private final Set<Integer> set;
+	
 	public Edge(int x, int y) {
 		this.x = x;
 		this.y = y;
+        set = new HashSet<Integer>();
+        set.add(x);
+        set.add(y);
 	}
 
 	@Override
@@ -145,20 +149,7 @@ class Edge {
 
 	@Override
 	public int hashCode() {
-		String rep = "";
-		rep += this.x + " " + this.y;
-		return rep.hashCode();
+		return set.hashCode();
 
-	}
-
-	@Override
-	public boolean equals(Object o) {
-
-		if (o == this){
-			return true;
-		}
-		Edge user = (Edge) o;
-
-		return this.x == user.x && this.y == user.y;
 	}
 }
